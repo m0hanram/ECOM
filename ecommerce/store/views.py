@@ -103,3 +103,11 @@ def processOrder(request):
     else:
         print('User is not logged in ..')
     return JsonResponse('Payment complete', safe=False)
+
+
+def view_detail(request, pk):
+    product = Product.objects.get(pk=pk)
+    context = {
+        'product': product
+    }
+    return render(request, 'view_detail.html', context)
