@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 import json
 import datetime
-
+from .forms import CommentForm
 
 from .models import *
 
@@ -107,7 +107,25 @@ def processOrder(request):
 
 def view_detail(request, pk):
     product = Product.objects.get(pk=pk)
+    
+    form = CommentForm()
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = Comment(
+                author = form.cleaned_data['author'],
+                body = form.cleaned_data['body'],
+                product=product,
+            )
+            comment.save()
+
+    comments = Comment.objects.filter(
+        product=product
+    )        
     context = {
-        'product': product
+        'product': product,
+        'comments': comments,
+        'form': form,
     }
+    
     return render(request, 'view_detail.html', context)
